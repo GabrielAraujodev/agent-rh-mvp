@@ -1,0 +1,5 @@
+# Não enviar para o build do Vercel
+.env.local
+.env*.local
+*.md
+.git
