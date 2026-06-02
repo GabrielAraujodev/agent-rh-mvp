@@ -21,7 +21,7 @@ export function getSupabase(): SupabaseClient {
     );
   }
 
-  browserClient = createClient(supabaseUrl, supabaseAnonKey);
+  browserClient = createClient(supabaseUrl!, supabaseAnonKey!);
   return browserClient;
 }
 
@@ -37,7 +37,7 @@ export function getSupabaseAdmin(): SupabaseClient {
     throw new Error("Supabase não configurado no servidor");
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  return createClient(supabaseUrl!, supabaseAnonKey!, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
