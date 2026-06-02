@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 🔥 CHAMADA PARA O GEMINI (GRÁTIS)
+    // 🔥 CHAMADA PARA OPENROUTER (GRÁTIS)
     const prompt = buildTriagePrompt(resumeText, jobDescription);
     const result = await callGeminiJSON<TriageResult>(prompt, SYSTEM_INSTRUCTION);
 
@@ -62,15 +62,27 @@ export async function POST(request: NextRequest) {
     const message =
       error instanceof Error ? error.message : "Erro interno do servidor";
 
-    // Erro específico da API Gemini
-    if (message.includes("API_KEY") || message.includes("not found")) {
+    // Erro de autenticação OpenRouter
+    if (message.includes("401") || message.includes("API_KEY") || message.includes("apikey")) {
       return NextResponse.json(
         {
           error:
-            "Chave da API Gemini não configurada. " +
-            "Crie um arquivo .env.local com GEMINI_API_KEY=sua-chave-aqui",
+            "Chave da API OpenRouter inválida ou não configurada. " +
+            "Crie uma chave em https://openrouter.ai/keys e coloque no .env.local",
         },
         { status: 500 }
+      );
+    }
+
+    // Erro de saldo insuficiente
+    if (message.includes("402") || message.includes("insufficient") || message.includes("quota")) {
+      return NextResponse.json(
+        {
+          error:
+            "Modelo temporariamente indisponível (limite excedido). " +
+            "Aguarde alguns segundos e tente novamente.",
+        },
+        { status: 429 }
       );
     }
 
